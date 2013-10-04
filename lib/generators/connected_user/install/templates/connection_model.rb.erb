@@ -1,0 +1,66 @@
+class ConnectionAuthorizationError < StandardError
+end
+
+class Connection < ActiveRecord::Base
+  belongs_to :<%= @underscored_user_name.downcase %>, :class_name => "<%= name %>", :foreign_key => "<%= @underscored_user_name.downcase %>_id"
+  after_initialize :after_initialize_callback
+
+  # attr_accessible :nickname, :token, :refresh_token, :expires_at
+  attr_accessor :client, :auth_hash
+
+  def update_nickname
+    update_attributes nickname: auth_hash[:info][:nickname] || auth_hash[:info][:name]
+  end
+
+  def update_credentials
+    update_attributes token: auth_hash[:credentials][:token] || nil, refresh_token: auth_hash[:credentials][:refresh_token] || nil, expires_at: DateTime.strptime(auth_hash[:credentials][:expires_at].to_s,'%s') if auth_hash[:credentials][:expires_at]
+  end
+
+  def authenticated?
+    unless token
+      raise ConnectionAuthorizationError.new(:message => 'No user token for this connection. User may not be authenticated.')
+    else
+      true
+    end
+  end
+
+  def share
+    raise "No sharing for #{self.provider}."
+  end
+
+  def after_initialize_callback
+  end
+
+  def self.find_or_create_from_omniauth(auth_hash,password=nil,password_confirmation=nil)
+    provider = clean_provider_name auth_hash[:provider]
+
+    if password && password_confirmation
+      c = Object.const_get(provider).find_or_initialize_by_uid_and_provider(auth_hash[:uid],auth_hash[:provider])
+      c.password = password
+      c.password_confirmation = password_confirmation
+    elsif password && !password_confirmation
+      c = Object.const_get(provider).find_or_initialize_by_uid_and_provider(auth_hash[:uid],auth_hash[:provider]).try(:authenticate,password)
+    else
+      c = Object.const_get(provider).find_or_initialize_by_uid_and_provider(auth_hash[:uid],auth_hash[:provider])
+    end
+
+    c.auth_hash = auth_hash
+    c.update_nickname
+    c.update_credentials
+
+    if c.changed? || c.new_record?
+      c.save
+    end
+    c
+  end
+
+
+  #  ***********************************************
+  #   PROTECTED METHODS      --- 11-20-2012
+  # ***********************************************
+  protected
+
+  def self.clean_provider_name(name)
+    "#{name.gsub(/[0-9]/,'')}Connection".classify
+  end
+end

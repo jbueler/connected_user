@@ -1,0 +1,23 @@
+class CreateConnectionsTable < ActiveRecord::Migration
+  def self.up
+    create_table :connections do |t|
+        t.string   "uid"
+        t.string   "type"
+        t.string   "provider"
+        t.string   "password_digest"
+        t.string   "nickname"
+        t.integer  "<%= @underscored_user_name.downcase %>_id"
+        t.string   "token"
+        t.string   "refresh_token"
+        t.datetime "expires_at"
+        t.string   "token_secret"
+        t.string   "email"
+        t.string   "profile_image"
+    t.timestamps
+    end
+  end
+  
+  def self.down
+    drop_table :connections
+  end
+end

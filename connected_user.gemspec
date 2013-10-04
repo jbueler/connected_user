@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.3'
 
   s.add_dependency 'activerecord'
-  s.add_dependency 'omniauth', '~> 1.1.4'
+  s.add_dependency 'omniauth', '~> 1.0'
 
   s.description = <<-EOM
   User model with Oath - Helps get you set up for third party authentication into your user model. Adds generators and migrations for your models.

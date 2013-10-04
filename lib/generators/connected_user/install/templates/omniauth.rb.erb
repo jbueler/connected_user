@@ -1,0 +1,17 @@
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :developer unless Rails.env.production?
+  
+  # provider :identity,
+  #   :model => IdentityConnection,
+  #   :fields => [:nickname],
+  #   :locate_conditions => lambda { |req| { model.auth_key => req['nickname']} },
+  #   :on_login => SessionController.action(:login),
+  #   :on_registration => SessionController.action(:register),
+  #   :on_failed_registration => SessionController.action(:failure)
+
+  # provider :facebook, APP_CONFIG['fb_app_id'], APP_CONFIG['fb_app_secret']
+  # provider :twitter, APP_CONFIG['tw_app_id'], APP_CONFIG['tw_app_secret']
+  # provider :instagram, APP_CONFIG['instagram_id'], APP_CONFIG['instagram_secret']
+  
+    # provider :google_oauth2, APP_CONFIG['google_app_id'], APP_CONFIG['google_app_secret'], :name => 'google'
+end

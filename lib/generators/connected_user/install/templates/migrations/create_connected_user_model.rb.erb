@@ -1,0 +1,13 @@
+class CreateConnectedUserModel < ActiveRecord::Migration
+  def self.up
+    create_table <%= ":#{@underscored_user_name.downcase.pluralize}" %> do |t|
+      t.string   "username"
+      t.string   "external_identifier"
+      t.timestamps
+    end
+  end
+  
+  def self.down
+    drop_table <%= ":#{@underscored_user_name.downcase.pluralize}" %>
+  end
+end

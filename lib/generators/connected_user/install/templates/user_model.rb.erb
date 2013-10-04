@@ -1,0 +1,33 @@
+class  <%= name %>  < ActiveRecord::Base
+  has_many :connections, :dependent => :destroy
+
+  def get_connection(connection)
+    self.connections.find {|c| c.type == "#{connection.to_s.gsub('Connection','')}Connection".classify}
+  end
+
+  def has_connection?(connection)
+    true if get_connection(connection)
+  end
+
+  def add_connection(connection)
+    self.connections << connection
+  end
+
+  def self.find_or_create_from_connection(connection)
+    unless connection.<%= name.downcase %>
+      u = <%= name %>.create(:username => connection.nickname)
+      u.connections << connection
+    end
+    connection.user
+  end
+
+  def self.find_or_create_from_omniauth(auth_hash,password=nil,password_confirmation=nil)
+    c = Connection.find_or_create_from_omniauth(auth_hash,password,password_confirmation)
+    unless c.<%= name.downcase %>
+      u = <%= name %>.create!(:username => c.nickname)
+      u.connections << c
+    end
+    c.user
+  end
+  # END OMNIAUTH CONNECTIONS
+end
