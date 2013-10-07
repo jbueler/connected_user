@@ -20,20 +20,20 @@ module ConnectedUser
           generate("konfigure:install")
         end
 
+        # ADD STRATEGEY GEM TO GEMFILE
+        gem "omniauth-#{name}"
+        Bundler.with_clean_env do
+          run "bundle install"
+        end
         # ADD STRATEGY TO INITIALIZER
         inject_into_file "config/initializers/omniauth.rb", "\n  provider :#{name.to_sym}, APP_CONFIG['#{name.to_s}_app_id'], APP_CONFIG['#{name.to_s}_app_secret']", :after => /provider :developer unless Rails.env.production\?*/
 
         # ADD stub CONFIG to APP CONFIG
         inject_into_file "config/konfigure.yml", "\n  #{name.to_s}_app_id : \n  #{name.to_s}_app_secret : ", :after => /defaults: &defaults*/
         
-        # ADD STRATEGEY GEM TO GEMFILE
-        gem "omniauth-#{name}"
-        
         # CREATE CONNECTION SUBCLASS FOR CONNECTION TYPE
         # check to see if we have a template for this connection type
         template 'provider_connection.rb.erb', "app/models/#{name.underscore}_connection.rb"
-        
-        run "bundle install"
       end
       
       def create_migrations
