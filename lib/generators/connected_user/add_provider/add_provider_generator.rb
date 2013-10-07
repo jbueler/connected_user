@@ -13,12 +13,18 @@ module ConnectedUser
       
       def copy_initializer
         name.gsub!(':','')
-        
+
+        # CHECK TO SEE IF konfigure.yml exists if it doesn't use konfigure:install to build it.
+        konfig = "#{Rails.root}/config/konfigure.yml"
+        unless File.exists?(konfig)
+          generate("konfigure:install")
+        end
+
         # ADD STRATEGY TO INITIALIZER
         inject_into_file "config/initializers/omniauth.rb", "\n  provider :#{name.to_sym}, APP_CONFIG['#{name.to_s}_app_id'], APP_CONFIG['#{name.to_s}_app_secret']", :after => /provider :developer unless Rails.env.production\?*/
 
         # ADD stub CONFIG to APP CONFIG
-        inject_into_file "config/config.yml", "\n  #{name.to_s}_app_id : \n  #{name.to_s}_app_secret : ", :after => /defaults: &defaults*/
+        inject_into_file "config/konfigure.yml", "\n  #{name.to_s}_app_id : \n  #{name.to_s}_app_secret : ", :after => /defaults: &defaults*/
         
         # ADD STRATEGEY GEM TO GEMFILE
         gem "omniauth-#{name}"

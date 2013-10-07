@@ -5,7 +5,8 @@ Creates User model, Connection Model. Adds helpers for adding auth providers (om
 
 ### Installation
 
-		gem 'connected_user', github: 'roundhouse/connected_user'
+	gem 'konfigure', git: 'git@github.com:roundhouse/konfigure.git' # this is now a requirement for connected_user
+	gem 'connected_user', :git => 'git@github.com:roundhouse/connected_user.git'
 
 Bundle install
 
