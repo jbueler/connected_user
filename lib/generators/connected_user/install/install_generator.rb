@@ -27,7 +27,7 @@ module ConnectedUser
           template 'session_controller.rb.erb', "app/controllers/session_controller.rb"
           
           # ADD CURRENT_USER HELPER
-          inject_into_file 'app/controllers/application_controller.rb', :after => "protect_from_forgery with: :exception" do
+          inject_into_file 'app/controllers/application_controller.rb', :after => "protect_from_forgery with: :exception" do          
           <<-eos
 
   private
@@ -46,6 +46,11 @@ module ConnectedUser
     end
           eos
           end
+          inject_into_file 'app/controllers/application_controller.rb', "\n  skip_before_filter :verify_authenticity_token, :only => :create", :after => "protect_from_forgery with: :exception"
+          # CREATE CONNECTION SUBCLASS FOR CONNECTION TYPE
+          # check to see if we have a template for this connection type
+          generate('connected_user:add_provider :developer')
+          
           route_file = "config/routes.rb"
           inject_into_file route_file, "\n  get '/logout' => 'session#destroy', :as => :logout", :after => /Application.routes.draw do*/
           inject_into_file route_file, "\n  post '/auth/:provider/callback' => 'session#create'", :after => /Application.routes.draw do*/
