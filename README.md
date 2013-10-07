@@ -1,7 +1,7 @@
-entity_status
+Connected User
 =============
 
-Ruby Gem for adding status helper methods to an activerecord model.
+Creates User model, Connection Model. Adds helpers for adding auth providers (omniauth strategies).
 
 ### Installation
 
